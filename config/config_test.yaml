@@ -1,0 +1,11 @@
+parameters:
+    base_url: 'http://127.0.0.1:8000'
+    test_config_used: true
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: localhost
+        port: 3306
+        dbname: symfony_fooball_app
+        user: root
+        password: debanjan

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Sell Player</h1>
+
+    <p>Seller Team: {{ sellerTeam.name }}</p>
+    <p>Buyer Team: {{ buyerTeam.name }}</p>
+    <p>Amount: {{ amount }}</p>
+
+    <form method="post" action="{{ path('sell_player', { 'id': player.id, 'sellerId': sellerTeam.id, 'buyerId': buyerTeam.id, 'amount': amount }) }}">
+        <button type="submit" class="btn btn-primary">Sell Player</button>
+    </form>
+{% endblock %}

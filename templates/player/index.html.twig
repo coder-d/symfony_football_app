@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Players</h1>
+    <div class="text-right mb-3">
+        <a href="{{ path('player_add') }}" class="btn btn-primary">Create New Player</a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Team</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+                {% set sellerId = player.team.id %}
+                <tr>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.surname }}</td>
+                    <td>{{ player.team.name }}</td>
+                    <td
+                        <button class="btn btn-primary sell-player-btn" data-player-id="{{ player.id }}" data-seller-id="{{ sellerId }}">Sell Player</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if currentPage > 1 %}
+                <li class="page-item"><a class="page-link" href="{{ path('player_index', { 'page': currentPage - 1 }) }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+
+            {% for page in 1..maxPages %}
+                {% if page == currentPage %}
+                    <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="{{ path('player_index', { 'page': page }) }}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if currentPage < maxPages %}
+                <li class="page-item"><a class="page-link" href="{{ path('player_index', { 'page': currentPage + 1 }) }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    <p>Total Players: {{ totalPlayers }}</p>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="buyerModal" tabindex="-1" role="dialog" aria-labelledby="buyerModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="buyerModalLabel">Sell Player</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="buyerTeamSelect">Buyer Team</label>
+                        <select id="buyerTeamSelect" class="form-control">
+                            {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sellingAmount">Selling Amount</label>
+                        <input type="number" id="sellingAmount" class="form-control" placeholder="Enter selling amount">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmSellBtn">Sell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Success</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Player sold successfully.</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel">Error</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>An error occurred.</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('.sell-player-btn').click(function() {
+                var playerId = $(this).data('player-id');
+                var sellerId = $(this).data('seller-id');
+
+                $('#buyerModal').modal('show');
+
+                $('#confirmSellBtn').click(function() {
+                    var buyerId = $('#buyerTeamSelect').val();
+                    var amount = $('#sellingAmount').val();
+                    if(buyerId == sellerId || null== amount || 0 == amount)
+                    {
+                        alert('Choose a different team than the current one and also make sure amount in not null');
+                        return false;
+                    }
+
+                    $.ajax({
+                        url: '{{ path('sell_player', {'id': 'PLAYER_ID', 'sellerId': 'SELLER_ID', 'buyerId': 'BUYER_ID', 'amount': 'AMOUNT'}) }}'
+                            .replace('PLAYER_ID', playerId)
+                            .replace('SELLER_ID', sellerId)
+                            .replace('BUYER_ID', buyerId)
+                            .replace('AMOUNT', amount),
+                        type: 'GET',
+                        data: {
+                            id:playerId,
+                            sellerId: sellerId,
+                            buyerId: buyerId,
+                            amount: amount
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Show success message and refresh the page
+                                $('#successModal').modal('show');
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 1500); // Refresh after 1.5 seconds
+                            } else {
+                                 // Show error message in modal
+                                var errorMessage = response.message;
+                                $('#errorModal .modal-body').html('<p class="alert alert-danger">' + errorMessage + '</p>');
+                                $('#errorModal').modal('show');
+                            }
+                        },
+                        error: function(xhr, textStatus, errorThrown) {
+                            // Show error message in modal
+                            console.log('here');
+                            var errorMessage = 'An error occurred: ' + errorThrown;
+                            $('#errorModal .modal-body').html('<p>' + errorMessage + '</p>');
+                            $('#errorModal').modal('show');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

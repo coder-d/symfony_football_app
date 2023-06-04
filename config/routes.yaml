@@ -1,0 +1,9 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+teams:
+    path: /teams
+    controller: App\Controller\TeamController::index
+    methods: GET
