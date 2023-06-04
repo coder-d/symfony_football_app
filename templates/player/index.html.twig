@@ -2,8 +2,9 @@
 
 {% block body %}
     <h1>Players</h1>
-    <div class="text-right mb-3">
-        <a href="{{ path('player_add') }}" class="btn btn-primary">Create New Player</a>
+    <div class="text-left mb-3">
+        <a href="{{ path('player_add') }}" class="btn btn-primary mb-3">Create New Player</a>
+        <a href="{{ path('team_index') }}" class="btn btn-primary mb-3">Teams</a>
     </div>
 
     <table class="table">
