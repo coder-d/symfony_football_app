@@ -3,6 +3,12 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    
+index_redirect:
+    path: /
+    controller: App\Controller\TeamController::index
+    methods: GET
+    
 teams:
     path: /teams
     controller: App\Controller\TeamController::index
