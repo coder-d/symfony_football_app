@@ -10,9 +10,9 @@
 >
     <php>
         <env name="DATABASE_HOST" value="localhost"/>
-        <env name="DATABASE_NAME" value="symfony_football_app"/>
-        <env name="DATABASE_USER" value="root"/>
-        <env name="DATABASE_PASSWORD" value="debanjan"/>
+        <env name="DATABASE_NAME" value=""/>
+        <env name="DATABASE_USER" value=""/>
+        <env name="DATABASE_PASSWORD" value=""/>
 
         <ini name="error_reporting" value="-1" />
         <ini name="intl.default_locale" value="en" />
@@ -34,7 +34,7 @@
         <env name="KERNEL_CLASS" value="App\Kernel" />
         <env name="APP_ENV" value="test" />
         <env name="BASE_URL" value="http://127.0.0.1:8000" />
-        <env name="DATABASE_URL" value="mysql://root:debanjan@127.0.0.1:3306/symfony_football_app?serverVersion=8.0.32" />
+        <env name="DATABASE_URL" value="" />
     </php>
 
     <testsuites>
